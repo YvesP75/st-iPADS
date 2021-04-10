@@ -1,7 +1,5 @@
 import gym
-from gym import spaces
 from params import *
-
 
 
 class TwoDimEnv(gym.Env):
@@ -15,19 +13,12 @@ class TwoDimEnv(gym.Env):
 
         # agent cannot be further away from target than space_limits
         self.space_limits = SPACE_LIMITS
-        self.landing_limits = LANDING_LIMITS
-
-        # max number of steps
-        self.max_steps = EPISODE_LENGTH
-
-        # lets start at 0
-        self.step_index = 0
 
         # Initialize the agent position
         rho_init = np.random.random() * SPACE_LIMITS
         theta_init = np.random.random() * 2 * PI - PI
         self.rho_init, self.theta_init, self.z_init = rho_init, theta_init, Z_INIT
-        self.agent_pos = rho_init * np.exp(1j*theta_init)
+        self.agent_pos = rho_init * np.exp(1j * theta_init)
         self.agent_z = Z_INIT
 
         # agent abs speed is constant, may change of direction on the plane, but doesnt change in the z-axis
@@ -37,26 +28,13 @@ class TwoDimEnv(gym.Env):
 
         #
         self.agent_previous_pos = self.agent_pos
-        self.reward = 0
-        self.rotation = 0
-        self.full_rotation = False
 
-        low, high = 0.0, 1.0
-        self.observation_space = spaces.Box(low=low, high=high, shape=(4,), dtype=np.float32)
-        self.action_space = spaces.Box(low=-high, high=high, shape=(1,), dtype=np.float32)
 
     def reset(self, training=True, rho_init=RHO_INIT, theta_init=THETA_INIT, z_init=Z_INIT):
         """
     :input: TwoDimEnv
     :return: TwoDimEnv
     """
-        # Initialize the agent
-        # agent speed is constant per step
-        if training:
-            rho_init = np.random.random() * START_LIMITS
-            theta_init = np.random.random() * 2 * PI - PI
-            z_init = self.max_steps * SPEED_Z
-
         # Initialize the agent position and speed
         self.agent_pos = rho_init * np.exp(1j * theta_init)
         self.agent_speed = SPEED_RHO * np.exp(1j * SPEED_ANGLE)
@@ -64,10 +42,6 @@ class TwoDimEnv(gym.Env):
 
         # init step index
         self.step_index = 0
-
-        # The parachute may turn either left or right
-        self.rotation = 0
-        self.full_rotation = False
 
         return self.get_obs()
 
@@ -86,37 +60,16 @@ class TwoDimEnv(gym.Env):
         self.agent_pos += self.agent_speed
         self.agent_z -= self.agent_speed_z
 
-        # have you already made a full turn?
-        self.rotation += action[0] * SPEED_ANGLE
-        if 2 * PI < np.abs(self.rotation):
-            self.full_rotation = True
-
         # Are we done?
         done = bool(self.agent_z <= 0)
-
-        # reward is given according to the distance to (0,0): 1 when at target, 0 when at init, and -1 when very far
-        # and : no mercy if you hit the space boundaries
-        # no mercy, '8-like loops' are not allowed: either you clockwise or counter clockwise, not both
-        if done:
-            reward = 2 * (np.exp(1-np.abs(self.agent_pos)/self.landing_limits) / np.exp(1)) - 1
-        else:
-            reward = 0
-            # Account for the boundaries of the space
-            if self.out_of_bound() or (self.rotation == 0 and self.full_rotation):
-                reward = -1
-                done = True
-        self.reward = reward
-
-        # For further usage
-        info = {}
 
         # get normalized obs
         obs = self.get_obs()
 
-        return obs, reward, done, info
+        return obs, 0., done, {}
 
     def render(self, **kwargs):
-        print('obs=', self.get_obs(), 'pos=', self.agent_pos, 'z=', self.agent_z)
+        pass
 
     def close(self):
         pass
@@ -138,13 +91,4 @@ class TwoDimEnv(gym.Env):
         obs = np.array([agent_dist, agent_angle, agent_speed, agent_z]).astype(np.float32)
         return obs
 
-    def out_of_bound(self):
-        '''
-        checks wether the parachute is out of bound for the training: it is a condition for early termination
-        :return: False if the agent is out of bound
-        '''
-        low_boundary = LANDING_LIMITS + self.agent_z * SPEED_RHO / SPEED_Z
-        mid_boundary = SPACE_LIMITS
-        # there is no need to calculate a high limit because the PADS is constrained by its start anyway
-        return min(low_boundary, mid_boundary) < np.abs(self.agent_pos)
 
