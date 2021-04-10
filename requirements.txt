@@ -1,0 +1,6 @@
+numpy==1.20.1
+pandas==1.2.3
+gym==0.18.0
+stable_baselines3==1.0
+streamlit==0.79.0
+pydeck==0.6.1
