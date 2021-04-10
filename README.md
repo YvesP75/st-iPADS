@@ -9,4 +9,4 @@ Install the dependencies with pip
 (it runs well with Python 3.7)
 
 and then run:
-Streamlit run show.py
+streamlit run show.py
