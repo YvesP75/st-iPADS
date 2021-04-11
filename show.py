@@ -35,7 +35,7 @@ def run_episode(env, model, lat_tg, lon_tg, rho_init=RHO_INIT, theta_init=THETA_
         path.append([lon, lat, MOVE_TO_METERS*(zed - step)])
     df_col = pd.DataFrame(traj, columns=['lat', 'lon', 'zed'])
     df_path = pd.DataFrame([{
-        'color': [0, 22, 100, 120],
+        'color': [0, 0, 200, 120],
         'path': path
     }])
     return df_path, df_col
@@ -77,22 +77,22 @@ def get_layers(df, df_past, df_target, df_path, df_col):
             'ScatterplotLayer',
             data=df_target,
             get_position='[lon, lat]',
-            get_color='[200, 30, 0, 160]',
-            get_radius=60,
+            get_color='[200, 30, 0]',
+            get_radius=65,
         ),
         pdk.Layer(
             'ScatterplotLayer',
             data=df_target,
             get_position='[lon, lat]',
-            get_color='[0, 0, 0, 160]',
+            get_color='[255, 255, 255]',
             get_radius=45,
         ),
         pdk.Layer(
             'ScatterplotLayer',
             data=df_target,
             get_position='[lon, lat]',
-            get_color='[0, 0, 200, 160]',
-            get_radius=30,
+            get_color='[0, 0, 200]',
+            get_radius=25,
         ),
         pdk.Layer(
             'ScatterplotLayer',
@@ -134,7 +134,7 @@ def show():
     model = SAC.load("longModel")
     st.title('Intelligent PADS by aikos')
     st.write('This is a quick demo of an autonomous Parachute (Precision Air Delivery System) controlled by Reinforcement learning. ')
-    st.text('Set the starting point of the parachute in the menu on the left')
+    st.text('<- Set the starting point')
 
     st.sidebar.write("Where do you want the parachute to start from?")
     rho = st.sidebar.slider('What distance? (in m)', 0, 3000, 1500) / MOVE_TO_METERS
