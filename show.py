@@ -77,8 +77,22 @@ def get_layers(df, df_past, df_target, df_path, df_col):
             'ScatterplotLayer',
             data=df_target,
             get_position='[lon, lat]',
-            get_color='[0, 30, 200, 160]',
-            get_radius=50,
+            get_color='[200, 30, 0, 160]',
+            get_radius=60,
+        ),
+        pdk.Layer(
+            'ScatterplotLayer',
+            data=df_target,
+            get_position='[lon, lat]',
+            get_color='[0, 0, 0, 160]',
+            get_radius=45,
+        ),
+        pdk.Layer(
+            'ScatterplotLayer',
+            data=df_target,
+            get_position='[lon, lat]',
+            get_color='[0, 0, 200, 160]',
+            get_radius=30,
         ),
         pdk.Layer(
             'ScatterplotLayer',
@@ -118,21 +132,22 @@ def show():
     '''
     env = TwoDimEnv()
     model = SAC.load("longModel")
-    st.title('Intelligent PADS')
+    st.title('Intelligent PADS by aikos')
     st.write('This is a quick demo of an autonomous Parachute (Precision Air Delivery System) controlled by Reinforcement learning. ')
+    st.text('Set the starting point of the parachute in the menu on the left')
 
-    st.sidebar.write("Indicate where you want the parachute to start from")
+    st.sidebar.write("Where do you want the parachute to start from?")
     rho = st.sidebar.slider('What distance? (in m)', 0, 3000, 1500) / MOVE_TO_METERS
     theta = 2*PI/360 * st.sidebar.slider('What angle?', 0, 360, 90)
     zed = int(st.sidebar.slider('What elevation? (in m)', 0, 1200, 600) / MOVE_TO_METERS)
 
-    location = st.sidebar.radio("Location", ['San Francisco', 'Paris'])
+    location = st.sidebar.radio("Location", ['San Francisco', 'Paris', 'Puilaurens'])
     lat_tg = LOC[location]['lat']
     lon_tg = LOC[location]['lon']
     df_path, df_col = run_episode(env, model, lat_tg, lon_tg, rho_init=rho, theta_init=theta, zed=zed)
     st.sidebar.write(
         'If you like to play, you will probably find some starting points where the parachute is out of control :) '
-        'Do not worry, we have more complex models are developped at www.aikos.com ')
+        'No worries, we have plenty more efficient models at www.aikos.com ')
 
     df_target = pd.DataFrame({'lat': [lat_tg], 'lon': [lon_tg]})
     deck_map = st.empty()
