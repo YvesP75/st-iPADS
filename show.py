@@ -132,7 +132,7 @@ def show():
     '''
     env = TwoDimEnv()
     model = SAC.load("longModel")
-    st.title('Intelligent PADS by aikos')
+    st.title('Intelligent PADS by hexamind')
     st.write('This is a quick demo of an autonomous Parachute (Precision Air Delivery System) controlled by Reinforcement learning. ')
     st.text('<- Set the starting point')
 
@@ -147,7 +147,7 @@ def show():
     df_path, df_col = run_episode(env, model, lat_tg, lon_tg, rho_init=rho, theta_init=theta, zed=zed)
     st.sidebar.write(
         'If you like to play, you will probably find some starting points where the parachute is out of control :) '
-        'No worries, we have plenty more efficient models at www.aikos.com ')
+        'No worries, we have plenty more efficient models at www.hexamind.com ')
 
     df_target = pd.DataFrame({'lat': [lat_tg], 'lon': [lon_tg]})
     deck_map = st.empty()
