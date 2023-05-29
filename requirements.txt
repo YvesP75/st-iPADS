@@ -43,7 +43,7 @@ rich==13.2.0
 semver==2.13.0
 six==1.16.0
 smmap==5.0.0
-stable-baselines3==1.8.0a2
+stable-baselines3==1.7.0
 streamlit==1.22.0
 tenacity==8.2.2
 toml==0.10.2
