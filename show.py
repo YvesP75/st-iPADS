@@ -6,6 +6,7 @@ import pandas as pd
 import pydeck as pdk
 from TwoDimEnv import TwoDimEnv
 
+import gymnasium as gym
 
 def run_episode(env, model, lat_tg, lon_tg, rho_init=RHO_INIT, theta_init=THETA_INIT, zed=Z_INIT):
     '''
